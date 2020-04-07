@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>File Uploads</title>
+    <link rel="stylesheet" href="https://cdn.bootcss.com/tailwindcss/1.2.0/tailwind.min.css">
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+</head>
+<body>
+<div class="text-center">
+    <h1 class="text-xl font-bold bg-gray-200 text-gray-600 py-4 flex items-center justify-center">File Upload</h1>
+    <div class="mt-20">
+        <form id="upForm"
+              action="#"
+              method="post" enctype="multipart/form-data">
+            <div class="flex justify-center">
+                <label class="w-64 flex flex-col items-center px-4 py-2 bg-white text-blue rounded-lg shadow-lg tracking-wide border border-blue-40 cursor-pointer hover:bg-blue-400 hover:text-white">
+                    <div class="flex items-center">
+                        <svg class="w-8 h-8" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                            <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z"></path>
+                        </svg>
+                        <p class="ml-4">Select a file</p>
+                    </div>
+                    <input id="file" type="file" name="file" class="hidden"/>
+                </label>
+
+                <button type="button"
+                        class="ml-4 border border-green-700 bg-green-600 hover:bg-green-700 text-white px-4 py-1 rounded focus:outline-none"
+                        onclick="onUpload();">Upload
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    function onUpload() {
+        var upUrl = "/files/uploads";
+        $.ajax({
+            url: upUrl,
+            type: 'POST',
+            cache: false,
+            data: new FormData($('#upForm')[0]),
+            processData: false,
+            contentType: false,
+            error: function (err) {
+                console.log('请求报错信息: ' + JSON.stringify(err));
+            },
+            success: function (res) {
+                console.log('请求返回结果: ' + JSON.stringify(res));
+            }
+        });
+    }
+
+</script>
+</body>
+</html>
