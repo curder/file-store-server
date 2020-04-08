@@ -28,10 +28,11 @@ CREATE TABLE IF NOT EXISTS `users`
     `phone`           varchar(20)           DEFAULT '' COMMENT '手机号',
     `email_validated` tinyint(1)            DEFAULT '0' COMMENT '邮箱是否验证',
     `phone_validated` tinyint(1)            DEFAULT '0' COMMENT '手机号码是否验证',
-    `created_at`      datetime              DEFAULT CURRENT_TIMESTAMP COMMENT '注册时间',
-    `last_active`     datetime              DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后活跃时间',
     `profile`         text COMMENT '其他属性',
     `status`          tinyint(1)   NOT NULL DEFAULT '0' COMMENT '账户状态「启用｜禁用｜锁定｜标记」',
+    `last_active`     datetime              DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后活跃时间',
+    `created_at`      datetime              DEFAULT CURRENT_TIMESTAMP COMMENT '注册时间',
+    `sign_up_at`      datetime              DEFAULT NULL COMMENT '最后登录时间',
     PRIMARY KEY (`id`),
     KEY `index_status_key` (`status`)
 ) ENGINE = InnoDB

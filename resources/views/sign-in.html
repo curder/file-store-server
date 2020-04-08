@@ -71,8 +71,11 @@
             success: function ({code, message, data}) {
                 if (code === 0) {
                     console.log(message);
-                    console.log(data.name, data.token);
-                    // window.location.href = data.location;
+                    // console.log(data.name, data.token);
+                    // 将token写入到localStorage
+                    localStorage.setItem("user_name", data.name)
+                    localStorage.setItem("user_token", data.token);
+                    window.location.href = data.location;
                 } else {
                     console.log("登录失败");
                 }

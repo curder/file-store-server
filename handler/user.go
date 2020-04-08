@@ -7,7 +7,6 @@ import (
     "github.com/curder/file-store-server/utils"
     "io/ioutil"
     "net/http"
-    "time"
 )
 
 const (
@@ -78,7 +77,7 @@ func SignInHandler(w http.ResponseWriter, r *http.Request) {
         }
 
         // 生成访问凭证
-        token := GenerateToken(name)
+        token := utils.GenerateToken(name)
         if updateToken := db.UpdateToken(name, token); !updateToken {
             w.Write([]byte("FAILED"))
             return
@@ -103,11 +102,32 @@ func SignInHandler(w http.ResponseWriter, r *http.Request) {
     }
 }
 
-// 生成访问凭证 规则是 md5(name + timestamp + slat) + timestamp[:8]
-func GenerateToken(name string) string {
-    ts := fmt.Sprintf("%x", time.Now().Unix())
+// 查询用户信息
+func UserInfoHandler(w http.ResponseWriter, r *http.Request) {
+    // 解析请求参数
+    r.ParseForm()
+    name := r.Form.Get("name")
+    token := r.Form.Get("token")
 
-    tokenPrefix := utils.MD5([]byte(name + ts + "token-salt"))
+    // 验证 token 是否生效
+    if isValid := utils.IsTokenValid(name, token); !isValid {
+        fmt.Printf("token is invalid")
+        return
+    }
 
-    return tokenPrefix + ts[:8]
+    // 查询用户信息
+    user, err := db.GetUserInfo(name)
+    if err != nil {
+        w.WriteHeader(http.StatusForbidden)
+        return
+    }
+
+    // 组装并响应用户数据
+    response := utils.Response{
+        Code:    0,
+        Message: "获取用户详细信息",
+        Data:    user,
+    }
+
+    w.Write(response.JSONBytes())
 }

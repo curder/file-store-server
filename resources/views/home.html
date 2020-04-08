@@ -11,7 +11,15 @@
 </head>
 <body>
 <div>
-    <div class="flex items-center justify-center bg-blue-300 py-4 text-2xl text-gray-700">文件管理列表</div>
+    <div class="flex items-center justify-center bg-blue-300 py-4 text-blue-800">
+        <div class="container mx-auto flex justify-between items-center text-center">
+            <h2 class="text-2xl">文件管理列表</h2>
+            <div class="text-xs text-left">
+                <p>用户名：<span class="font-bold" id="name">Curder</span></p>
+                <p>最后登录时间：<span class="font-bold" id="time">2020-01-02</span></p>
+            </div>
+        </div>
+    </div>
 
     <div class="mt-2 container mx-auto flex justify-center">
         <table class="table-auto w-full">
@@ -42,5 +50,35 @@
         </table>
     </div>
 </div>
+<script>
+     $(function(){
+
+        $.ajax({
+            url: "/users/info?" + queryParams(),
+            type: "POST",
+            error: function (err) {
+                alert(JSON.stringify(err));
+            },
+            success: function (body) {
+                var resp = body;
+                if (typeof (resp) == 'string') {
+                    resp = JSON.parse(body);
+                }
+
+                if (resp.code === 10005) {
+                    window.location.href = "/static/view/sign-in.html";
+                }
+                document.getElementById("name").innerHTML = resp.data.name;
+                document.getElementById("time").innerHTML = resp.data.sign_up_at;
+            }
+        });
+    })
+
+     function queryParams() {
+         var username = localStorage.getItem("user_name");
+         var token = localStorage.getItem("user_token");
+         return 'name=' + username + '&token=' + token;
+     }
+</script>
 </body>
 </html>
