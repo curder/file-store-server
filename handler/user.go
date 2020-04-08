@@ -84,8 +84,22 @@ func SignInHandler(w http.ResponseWriter, r *http.Request) {
             return
         }
 
-        // 登录成功后定向到首页
-        w.Write([]byte("http://" + r.Host + "/resources/views/home.html"))
+        // 构造返回的结构体，返回json
+        response := utils.Response{
+            Code:    0,
+            Message: "登录成功",
+            Data: struct {
+                Location string `json:"location"`
+                Name     string `json:"name"`
+                Token    string `json:"token"`
+            }{
+                Location: "http://" + r.Host + "/resources/views/home.html",
+                Name:     name,
+                Token:    token,
+            },
+        }
+        w.Header().Set("Content-Type", "application/json")
+        w.Write(response.JSONBytes())
     }
 }
 

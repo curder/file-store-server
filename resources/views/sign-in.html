@@ -68,10 +68,11 @@
             error: function (err) {
                 alert(JSON.stringify(err));
             },
-            success: function (resp) {
-                if (resp.code === 10000) {
-                    console.log("登录成功");
-                    window.location.href = "/users";
+            success: function ({code, message, data}) {
+                if (code === 0) {
+                    console.log(message);
+                    console.log(data.name, data.token);
+                    // window.location.href = data.location;
                 } else {
                     console.log("登录失败");
                 }
