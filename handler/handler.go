@@ -70,7 +70,8 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 
         _, _ = newFile.Seek(0, 0)
         fileMeta.FileSha1 = utils.FileSha1(newFile) // 计算文件的sha1值
-        meta.UpdateFileMeta(fileMeta)
+        // meta.UpdateFileMeta(fileMeta)
+        _ = meta.UpdateFileMetaDB(fileMeta)
 
         http.Redirect(w, r, "/files/uploads/succeeded", http.StatusFound) // 重定向到新页面
     }
@@ -89,8 +90,14 @@ func GetFileMetaHandler(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    fileHash := r.Form.Get("file_hash")
-    fileMeta := meta.GetFileMeta(fileHash)
+    fileSha1 := r.Form.Get("file_hash")
+    // fileMeta := meta.GetFileMeta(fileSha1)
+    fileMeta, err := meta.GetFileMetaDB(fileSha1)
+    if err != nil {
+        w.WriteHeader(http.StatusInternalServerError)
+        return
+    }
+
     data, err := json.Marshal(fileMeta) // json格式化
 
     if err != nil {
