@@ -14,6 +14,8 @@ func main() {
     http.HandleFunc("/files/update", handler.FileMateUpdateHandler)             // 文件更新 - 重命名
     http.HandleFunc("/files/delete", handler.FileDeleteHandler)                 // 文件删除
 
+    http.HandleFunc("/users/sign-up", handler.SignUpHandler) // 用户注册
+
     fmt.Println("http://127.0.0.1:8888")
 
     err := http.ListenAndServe(":8888", nil)
