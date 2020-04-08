@@ -8,7 +8,8 @@ import (
 
 func main() {
     http.HandleFunc("/files/uploads", handler.UploadHandler)                   // 文件上传处理
-    http.HandleFunc("/file/uploads/succeeded", handler.UploadSucceededHandler) // 文件上传成功
+    http.HandleFunc("/files/uploads/succeeded", handler.UploadSucceededHandler) // 文件上传成功
+    http.HandleFunc("/files/show", handler.GetFileMetaHandle) // 查询文件详情
 
     fmt.Println("http://127.0.0.1:8888")
 

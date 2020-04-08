@@ -1,6 +1,7 @@
 package handler
 
 import (
+    "encoding/json"
     "fmt"
     "github.com/curder/file-store-server/meta"
     "github.com/curder/file-store-server/utils"
@@ -70,11 +71,32 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
         fileMeta.FileSha1 = utils.FileSha1(newFile) // 计算文件的sha1值
         meta.UpdateFileMeta(fileMeta)
 
-        http.Redirect(w, r, "/file/uploads/succeeded", http.StatusFound) // 重定向到新页面
+        http.Redirect(w, r, "/files/uploads/succeeded", http.StatusFound) // 重定向到新页面
     }
 }
 
 // 上传成功
 func UploadSucceededHandler(w http.ResponseWriter, r *http.Request) {
     _, _ = io.WriteString(w, "Upload finished!")
+}
+
+// 文件查询
+func GetFileMetaHandle(w http.ResponseWriter, r *http.Request) {
+    err := r.ParseForm()
+    if err != nil {
+        fmt.Printf("parse form err: %s", err.Error())
+        return
+    }
+
+    fileHash := r.Form["file_hash"][0]
+
+    fileMeta := meta.GetFileMeta(fileHash)
+
+    data, err := json.Marshal(fileMeta) // json格式化
+
+    if err != nil {
+        w.WriteHeader(http.StatusInternalServerError)
+        return
+    }
+    _, _ = w.Write(data)
 }
