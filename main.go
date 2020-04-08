@@ -7,6 +7,9 @@ import (
 )
 
 func main() {
+    //静态资源处理
+    http.Handle("/resources/", http.StripPrefix("/resources/", http.FileServer(http.Dir("./resources"))))
+
     http.HandleFunc("/files/uploads", handler.UploadHandler)                    // 文件上传处理
     http.HandleFunc("/files/uploads/succeeded", handler.UploadSucceededHandler) // 文件上传成功
     http.HandleFunc("/files/show", handler.GetFileMetaHandler)                  // 查询文件详情
@@ -15,6 +18,7 @@ func main() {
     http.HandleFunc("/files/delete", handler.FileDeleteHandler)                 // 文件删除
 
     http.HandleFunc("/users/sign-up", handler.SignUpHandler) // 用户注册
+    http.HandleFunc("/users/sign-in", handler.SignInHandler) // 用户登录
 
     fmt.Println("http://127.0.0.1:8888")
 

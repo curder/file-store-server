@@ -4,6 +4,7 @@ import (
     "database/sql"
     "fmt"
     _ "github.com/go-sql-driver/mysql"
+    "log"
     "os"
 )
 
@@ -24,4 +25,32 @@ func init() {
 // 返回数据库连接对象
 func Connection() *sql.DB {
     return db
+}
+
+// 分析数据库行
+func ParseRows(rows *sql.Rows) []map[string]interface{} {
+    columns, _ := rows.Columns()
+    scanArgs := make([]interface{}, len(columns))
+    values := make([]interface{}, len(columns))
+    for j := range values {
+        scanArgs[j] = &values[j]
+    }
+
+    record := make(map[string]interface{})
+    records := make([]map[string]interface{}, 0)
+    for rows.Next() {
+        // 将行数据保存到record字典
+        if err := rows.Scan(scanArgs...); err != nil {
+            log.Fatal(err)
+            panic(err)
+        }
+
+        for i, col := range values {
+            if col != nil {
+                record[columns[i]] = col
+            }
+        }
+        records = append(records, record)
+    }
+    return records
 }

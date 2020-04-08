@@ -36,3 +36,13 @@ CREATE TABLE IF NOT EXISTS `users`
     KEY `index_status_key` (`status`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
+
+CREATE TABLE IF NOT EXISTS `user_tokens`
+(
+    `id`    int(11)     NOT NULL AUTO_INCREMENT,
+    `name`  varchar(64) NOT NULL DEFAULT '' COMMENT '用户名',
+    `token` char(40)    NOT NULL DEFAULT '' COMMENT '用户校验token',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `unique_index_name` (`name`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8;
