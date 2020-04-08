@@ -44,6 +44,7 @@ func GetFileMetaDB(fileSha1 string) (FileMeta, error) {
         FileName: file.FileName.String,
         FileSize: file.FileSize.Int64,
         Location: file.Location.String,
+        UpdatedAt: file.UpdatedAt.String,
     }
     return fileMeta, nil
 }

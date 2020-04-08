@@ -37,11 +37,12 @@ type TableFile struct {
     FileName sql.NullString
     FileSize sql.NullInt64
     Location sql.NullString
+    UpdatedAt sql.NullString
 }
 
 // 通过Sha1获取文件原信息
 func GetFileMeta(fileSha1 string) (*TableFile, error) {
-    sqlStr := "SELECT `sha1`, `name`, `size`, `path` FROM files WHERE sha1= ? AND `status` = 1 limit 1"
+    sqlStr := "SELECT `sha1`, `name`, `size`, `path`, `updated_at` FROM files WHERE sha1= ? AND `status` = 1 limit 1"
     prepareStatement, err := mysqlDB.Connection().Prepare(sqlStr)
     if err != nil {
         fmt.Printf("Failed to prepare sql err: %s", err.Error())
@@ -52,7 +53,7 @@ func GetFileMeta(fileSha1 string) (*TableFile, error) {
 
     file := TableFile{}
 
-    err = prepareStatement.QueryRow(fileSha1).Scan(&file.FileSha1, &file.FileName, &file.FileSize, &file.Location)
+    err = prepareStatement.QueryRow(fileSha1).Scan(&file.FileSha1, &file.FileName, &file.FileSize, &file.Location, &file.UpdatedAt)
     if err != nil {
         fmt.Printf(err.Error())
         return nil, err
