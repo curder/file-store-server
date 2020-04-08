@@ -2,10 +2,13 @@ package handler
 
 import (
     "fmt"
+    "github.com/curder/file-store-server/meta"
+    "github.com/curder/file-store-server/utils"
     "io"
     "io/ioutil"
     "net/http"
     "os"
+    "time"
 )
 
 // 文件上传逻辑
@@ -36,7 +39,14 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
             }
         }()
 
-        newFile, err := os.Create("/tmp/go-test-files/" + head.Filename) // 创建一个文件，如果存在这个文件则清空，如果不存在则创建
+        // 创建文件原始数据对象
+        fileMeta := meta.FileMeta{
+            FileName:  head.Filename,
+            Location:  "/tmp/go-test-files/" + head.Filename,
+            UpdatedAt: time.Now().Format("2006-01-02 15:04:05"),
+        }
+
+        newFile, err := os.Create(fileMeta.FileName) // 创建一个文件，如果存在这个文件则清空，如果不存在则创建
 
         defer func() { // 延迟关闭文件
             err = newFile.Close()
@@ -50,11 +60,15 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
             return
         }
 
-        _, err = io.Copy(newFile, file) // 将用户上传的文件拷贝给上面创建的文件
+        fileMeta.FileSize, err = io.Copy(newFile, file) // 将用户上传的文件拷贝给上面创建的文件
         if err != nil {
             fmt.Printf("Failed to save data into file, err: %s", err.Error())
             return
         }
+
+        _, _ = newFile.Seek(0, 0)
+        fileMeta.FileSha1 = utils.FileSha1(newFile) // 计算文件的sha1值
+        meta.UpdateFileMeta(fileMeta)
 
         http.Redirect(w, r, "/file/uploads/succeeded", http.StatusFound) // 重定向到新页面
     }
