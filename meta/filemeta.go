@@ -24,3 +24,8 @@ func UpdateFileMeta(fileMeta FileMeta) {
 func GetFileMeta(fileSha1 string) FileMeta {
     return fileMetas[fileSha1]
 }
+
+// 删除文件
+func RemoveFileMeta(fileSha1 string) {
+    delete(fileMetas, fileSha1) // TODO 多线程的时候这样删除会不安全
+}
