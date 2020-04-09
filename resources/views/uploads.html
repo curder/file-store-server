@@ -27,6 +27,7 @@
                     <input id="file" type="file" name="file" class="hidden"/>
                 </label>
 
+                <input name="name" type="hidden" id="inline-name">
                 <button type="button"
                         class="ml-4 border border-green-700 bg-green-600 hover:bg-green-700 text-white px-4 py-1 rounded focus:outline-none"
                         onclick="onUpload();">Upload
@@ -53,7 +54,28 @@
             }
         });
     }
+    $(function() {
+        $.ajax({
+            url: "/users/info?" + queryParams(),
+            type: "POST",
+            error: function (err) {
+                alert(JSON.stringify(err));
+            },
+            success: function (body) {
+                var resp = body;
+                if (typeof (resp) == 'string') {
+                    resp = JSON.parse(body);
+                }
 
+                $("#inline-name").val(resp.data.name)
+            }
+        });
+    });
+    function queryParams() {
+        var username = localStorage.getItem("user_name");
+        var token = localStorage.getItem("user_token");
+        return 'name=' + username + '&token=' + token;
+    }
 </script>
 </body>
 </html>

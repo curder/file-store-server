@@ -8,7 +8,7 @@ import (
 
 // 文件上传完毕写入数据库行操作
 func OnFileUploadFinished(fileName, fileSha1 string, fileSize int64, location string) bool {
-    sqlStr := "INSERT INTO files (`name`, `sha1`, `size`, `path`, `status`) VALUES (?, ?, ?, ?, 1);"
+    sqlStr := "REPLACE INTO files (`name`, `sha1`, `size`, `path`, `status`) VALUES (?, ?, ?, ?, 1);"
     prepareStatement, err := mysqlDB.Connection().Prepare(sqlStr)
     if err != nil {
         fmt.Printf("Failed to prepare statement. err: %s", err.Error())

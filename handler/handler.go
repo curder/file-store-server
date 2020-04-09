@@ -3,6 +3,7 @@ package handler
 import (
     "encoding/json"
     "fmt"
+    "github.com/curder/file-store-server/db"
     "github.com/curder/file-store-server/meta"
     "github.com/curder/file-store-server/utils"
     "io"
@@ -73,7 +74,14 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
         // meta.UpdateFileMeta(fileMeta)
         _ = meta.UpdateFileMetaDB(fileMeta)
 
-        http.Redirect(w, r, "/files/uploads/succeeded", http.StatusFound) // 重定向到新页面
+        // TODO 更新用户文件表记录
+        userName := r.Form.Get("name")
+        finished := db.OnUserFileUploadFinished(userName, fileMeta.FileName, fileMeta.FileSha1, fileMeta.FileSize)
+        if finished {
+            http.Redirect(w, r, "/files/uploads/succeeded", http.StatusFound) // 重定向到新页面
+        } else {
+            w.Write([]byte("FAIL"))
+        }
     }
 }
 
@@ -144,8 +152,8 @@ func DownloadHandler(w http.ResponseWriter, r *http.Request) {
 // 文件更新 - 重命名
 func FileMateUpdateHandler(w http.ResponseWriter, r *http.Request) {
     operatorType := r.PostFormValue("operator_type") // 操作类型 0 为重命名
-    fileSha1 := r.PostFormValue("file_hash")    // 修改的文件sha1
-    newFileName := r.PostFormValue("file_name") // 要修改的文件名
+    fileSha1 := r.PostFormValue("file_hash")         // 修改的文件sha1
+    newFileName := r.PostFormValue("file_name")      // 要修改的文件名
 
     opInt, _ := strconv.Atoi(operatorType)
     if opInt != 0 {
