@@ -19,7 +19,7 @@ func main() {
 
     http.HandleFunc("/users/sign-up", handler.SignUpHandler) // 用户注册
     http.HandleFunc("/users/sign-in", handler.SignInHandler) // 用户登录
-    http.HandleFunc("/users/info", handler.UserInfoHandler)  // 用户详细信息
+    http.HandleFunc("/users/info", handler.HttpInterceptor(handler.UserInfoHandler))  // 用户详细信息
 
     fmt.Println("http://127.0.0.1:8888")
 

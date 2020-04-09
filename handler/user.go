@@ -42,8 +42,8 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
             }
             data, _ := json.Marshal(res)
             w.Header().Set("Content-Type", "application/json")
-            w.Write(data)
             w.WriteHeader(http.StatusOK)
+            w.Write(data)
         } else {
             w.Write([]byte("FAILED"))
         }
@@ -107,13 +107,13 @@ func UserInfoHandler(w http.ResponseWriter, r *http.Request) {
     // 解析请求参数
     r.ParseForm()
     name := r.Form.Get("name")
-    token := r.Form.Get("token")
+    // token := r.Form.Get("token")
 
     // 验证 token 是否生效
-    if isValid := utils.IsTokenValid(name, token); !isValid {
-        fmt.Printf("token is invalid")
-        return
-    }
+    //if isValid := utils.IsTokenValid(name, token); !isValid {
+    //    fmt.Printf("token is invalid")
+    //    return
+    //}
 
     // 查询用户信息
     user, err := db.GetUserInfo(name)

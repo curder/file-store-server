@@ -13,7 +13,7 @@ var db *sql.DB
 // 初始化数据库连接
 func init() {
     var err error
-    dns := "root:@tcp(127.0.0.1:3306)/file_store_server?charset=utf8"
+    dns := "root:root@tcp(127.0.0.1:33060)/file_store_server?charset=utf8"
     db, err = sql.Open("mysql", dns)
     db.SetConnMaxLifetime(1000) // 设置活跃连接数
     if err != nil {

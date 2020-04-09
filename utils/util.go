@@ -96,8 +96,8 @@ func IsTokenValid(name, token string) bool {
     ts := fmt.Sprintf("%x", time.Now().Unix())[:8]
     userTime, _ := strconv.ParseUint(token[32:], 16, 32)
     now, _ := strconv.ParseUint(ts[:8], 16, 32)
-
     const TokenInvalidTime = 86400
+
     if userTime+TokenInvalidTime < now {
         fmt.Println("token超时")
         return false
