@@ -6,11 +6,11 @@ import (
 
 // 文件的原始信息结构
 type FileMeta struct {
-    FileSha1  string
-    FileName  string
-    FileSize  int64
-    Location  string
-    UpdatedAt string
+    FileSha1  string `json:"file_sha1"`
+    FileName  string `json:"file_name"`
+    FileSize  int64  `json:"file_size"`
+    Location  string `json:"location"`
+    UpdatedAt string `json:"updated_at"`
 }
 
 var fileMetas map[string]FileMeta
@@ -40,10 +40,10 @@ func GetFileMetaDB(fileSha1 string) (FileMeta, error) {
         return FileMeta{}, err
     }
     fileMeta := FileMeta{
-        FileSha1: file.FileSha1,
-        FileName: file.FileName.String,
-        FileSize: file.FileSize.Int64,
-        Location: file.Location.String,
+        FileSha1:  file.FileSha1,
+        FileName:  file.FileName.String,
+        FileSize:  file.FileSize.Int64,
+        Location:  file.Location.String,
         UpdatedAt: file.UpdatedAt.String,
     }
     return fileMeta, nil

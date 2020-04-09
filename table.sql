@@ -60,7 +60,6 @@ CREATE TABLE IF NOT EXISTS `user_files`
     `created_at`       datetime              DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `updated_at`       datetime              DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后时间',
     PRIMARY KEY (`id`),
-    UNIQUE KEY `unique_index_user_name_file_sha1` (`user_name`, `file_sha1`),
     KEY `index_key_status` (`status`),
     KEY `index_key_user_name` (`user_name`)
 ) ENGINE = InnoDB

@@ -10,6 +10,7 @@ import (
     "io/ioutil"
     "net/http"
     "os"
+    "reflect"
     "strconv"
     "time"
 )
@@ -74,11 +75,27 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
         // meta.UpdateFileMeta(fileMeta)
         _ = meta.UpdateFileMetaDB(fileMeta)
 
-        // TODO 更新用户文件表记录
+        // 更新用户文件表记录
         userName := r.Form.Get("name")
         finished := db.OnUserFileUploadFinished(userName, fileMeta.FileName, fileMeta.FileSha1, fileMeta.FileSize)
         if finished {
-            http.Redirect(w, r, "/files/uploads/succeeded", http.StatusFound) // 重定向到新页面
+            file := meta.FileMeta{
+                FileSha1:  fileMeta.FileSha1,
+                FileName:  fileMeta.FileName,
+                FileSize:  fileMeta.FileSize,
+                Location:  fileMeta.Location,
+                UpdatedAt: fileMeta.UpdatedAt,
+            }
+            response := utils.Response{
+                Code:    0,
+                Message: "文件上传成功",
+                Data:    file,
+            }
+
+            w.Header().Set("Content-Type", "application/json")
+            w.Write(response.JSONBytes())
+
+            // http.Redirect(w, r, "/files/uploads/succeeded", http.StatusFound) // 重定向到新页面
         } else {
             w.Write([]byte("FAIL"))
         }
@@ -221,4 +238,52 @@ func FileDeleteHandler(w http.ResponseWriter, r *http.Request) {
     meta.RemoveFileMeta(fileSha1) // 删除map中的fileSha1
 
     w.WriteHeader(http.StatusOK)
+}
+
+// 尝试秒传
+func TypeFastUploadHandler(w http.ResponseWriter, r *http.Request) {
+    // 解析请求参数
+    // r.ParseForm()
+    name := r.PostFormValue("name")
+    fileName := r.PostFormValue("file_name")
+    fileSha1 := r.PostFormValue("file_hash")
+    fileSize, _ := strconv.Atoi(r.PostFormValue("file_size"))
+
+    // 从文件表中查询相同hash的记录
+    fileMeta, err := meta.GetFileMetaDB(fileSha1)
+    if err != nil {
+        fmt.Println(err.Error())
+        w.WriteHeader(http.StatusInternalServerError)
+        return
+    }
+
+    // 查不到记录返回秒传失败
+    if reflect.DeepEqual(fileMeta, meta.FileMeta{}) {
+        response := utils.Response{
+            Code:    -1,
+            Message: "秒传失败，请访问普通上传接口",
+        }
+        w.Write(response.JSONBytes())
+        return
+    }
+
+    // 上传过则将文件信息写入到用户关联表
+    finished := db.OnUserFileUploadFinished(name, fileName, fileSha1, int64(fileSize))
+    if finished {
+        response := utils.Response{
+            Code:    0,
+            Message: "秒传成功",
+        }
+        w.Header().Set("Content-Type", "application/json")
+        w.Write(response.JSONBytes())
+        return
+    } else {
+        response := utils.Response{
+            Code:    -2,
+            Message: "秒传失败，请稍后重试",
+        }
+        w.Header().Set("Content-Type", "application/json")
+        w.Write(response.JSONBytes())
+        return
+    }
 }

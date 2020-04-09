@@ -4,6 +4,7 @@ import (
     "database/sql"
     "fmt"
     mysqlDB "github.com/curder/file-store-server/db/mysql"
+    "log"
 )
 
 // 文件上传完毕写入数据库行操作
@@ -33,10 +34,10 @@ func OnFileUploadFinished(fileName, fileSha1 string, fileSize int64, location st
 }
 
 type TableFile struct {
-    FileSha1 string
-    FileName sql.NullString
-    FileSize sql.NullInt64
-    Location sql.NullString
+    FileSha1  string
+    FileName  sql.NullString
+    FileSize  sql.NullInt64
+    Location  sql.NullString
     UpdatedAt sql.NullString
 }
 
@@ -55,8 +56,12 @@ func GetFileMeta(fileSha1 string) (*TableFile, error) {
 
     err = prepareStatement.QueryRow(fileSha1).Scan(&file.FileSha1, &file.FileName, &file.FileSize, &file.Location, &file.UpdatedAt)
     if err != nil {
-        fmt.Printf(err.Error())
-        return nil, err
+        if err == sql.ErrNoRows {
+            return &TableFile{}, nil // 查不到对应记录， 返回参数及错误均为nil
+        } else {
+            log.Println(err.Error())
+            return &TableFile{}, err
+        }
     }
 
     return &file, nil

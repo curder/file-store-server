@@ -17,6 +17,7 @@ func main() {
     http.HandleFunc("/files/download", handler.DownloadHandler)                 // 文件下载
     http.HandleFunc("/files/update", handler.FileMateUpdateHandler)             // 文件更新 - 重命名
     http.HandleFunc("/files/delete", handler.FileDeleteHandler)                 // 文件删除
+    http.HandleFunc("/files/fast-uploads", handler.TypeFastUploadHandler)        // 秒传
 
     http.HandleFunc("/users/sign-up", handler.SignUpHandler)                         // 用户注册
     http.HandleFunc("/users/sign-in", handler.SignInHandler)                         // 用户登录
