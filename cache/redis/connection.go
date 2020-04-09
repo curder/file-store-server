@@ -23,10 +23,10 @@ func newRedisPool() *redis.Pool {
                 return nil, err
             }
             // 访问认证
-            if _, err = dial.Do("AUTH", redisPassword); err != nil {
-                dial.Close()
-                return nil, err
-            }
+            //if _, err = dial.Do("AUTH", redisPassword); err != nil {
+            //    dial.Close()
+            //    return nil, err
+            //}
 
             return dial, nil
         },

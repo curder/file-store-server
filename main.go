@@ -22,6 +22,7 @@ func main() {
     // 分块上传
     http.HandleFunc("/files/multipart-uploads/init", handler.InitiateMultipartUploadHandler)// 初始化分块信息
     http.HandleFunc("/files/multipart-uploads/upload-part", handler.UploadPartHandler) // 分块上传
+    http.HandleFunc("/files/multipart-uploads/complete", handler.CompleteUploadPartHandler) // 分块上传完毕
 
 
     http.HandleFunc("/users/sign-up", handler.SignUpHandler)                         // 用户注册
