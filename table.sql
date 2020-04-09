@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS `users`
     `status`          tinyint(1)   NOT NULL DEFAULT '0' COMMENT '账户状态「启用｜禁用｜锁定｜标记」',
     `last_active`     datetime              DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后活跃时间',
     `created_at`      datetime              DEFAULT CURRENT_TIMESTAMP COMMENT '注册时间',
-    `sign_up_at`      datetime              DEFAULT NULL COMMENT '最后登录时间',
+    `sign_up_at`      datetime              DEFAULT CURRENT_TIMESTAMP COMMENT '最后登录时间',
     PRIMARY KEY (`id`),
     KEY `index_status_key` (`status`)
 ) ENGINE = InnoDB
@@ -45,5 +45,23 @@ CREATE TABLE IF NOT EXISTS `user_tokens`
     `token` char(40)    NOT NULL DEFAULT '' COMMENT '用户校验token',
     PRIMARY KEY (`id`),
     UNIQUE KEY `unique_index_name` (`name`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8;
+
+CREATE TABLE IF NOT EXISTS `user_files`
+(
+    `id`               int(11)      NOT NULL AUTO_INCREMENT,
+    `user_name`        varchar(64)  NOT NULL DEFAULT '' COMMENT '用户名',
+    `file_name`        varchar(255) NOT NULL DEFAULT '' COMMENT '文件名',
+    `file_sha1`        varchar(64)  NOT NULL DEFAULT '' COMMENT '文件sha1',
+    `file_size`        bigint(20)            DEFAULT '0' COMMENT '文件大小',
+    `status`           tinyint(4)            DEFAULT NULL COMMENT '状态「可用｜禁用｜已删除等状态的标示」',
+    `user_file_extras` text COMMENT '拓展字段',
+    `created_at`       datetime              DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `updated_at`       datetime              DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后时间',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `unique_index_user_name_file_sha1` (`user_name`, `file_sha1`),
+    KEY `index_key_status` (`status`),
+    KEY `index_key_user_name` (`user_name`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
