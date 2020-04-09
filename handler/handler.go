@@ -115,6 +115,28 @@ func GetFileMetaHandler(w http.ResponseWriter, r *http.Request) {
     _, _ = w.Write(data)
 }
 
+// 查询文件列表 - 通过用户名
+func GetFilesMetaHandler(w http.ResponseWriter, r *http.Request) {
+    r.ParseForm()
+
+    username := r.Form.Get("name")
+    limit, _ := strconv.Atoi(r.Form.Get("limit"))
+
+    userFiles, err := db.GetUserFileMetas(username, limit)
+    if err != nil {
+        w.WriteHeader(http.StatusInternalServerError)
+        return
+    }
+
+    data, err := json.Marshal(userFiles)
+    if err != nil {
+        w.WriteHeader(http.StatusInternalServerError)
+        return
+    }
+    w.Header().Set("Content-Type", "application/json")
+    w.Write(data)
+}
+
 // 文件下载
 func DownloadHandler(w http.ResponseWriter, r *http.Request) {
     err := r.ParseForm()

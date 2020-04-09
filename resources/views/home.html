@@ -7,10 +7,12 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="https://cdn.bootcss.com/tailwindcss/1.2.0/tailwind.min.css">
     <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/vue/2.6.11/vue.min.js"></script>
+    <script src="https://cdn.bootcss.com/axios/0.19.2/axios.min.js"></script>
     <title>User Home Page</title>
 </head>
 <body>
-<div>
+<div id="app">
     <div class="flex items-center justify-center bg-blue-300 py-4 text-blue-800">
         <div class="container mx-auto flex justify-between items-center text-center">
             <h2 class="text-2xl">文件管理列表</h2>
@@ -31,33 +33,47 @@
             <thead>
             <tr class="text-left">
                 <th class="px-4 py-2 border">文件名</th>
-                <th class="px-4 py-2 border">文件大小</th>
-                <th class="px-4 py-2 border">时间</th>
+                <th class="px-4 py-2 border">文件大小(字节)</th>
+                <th class="px-4 py-2 border">创建时间</th>
+                <th class="px-4 py-2 border">更新时间</th>
             </tr>
             </thead>
             <tbody>
-            <tr>
-                <td class="border px-4 py-2">hello-world.mp4</td>
-                <td class="border px-4 py-2">152KB</td>
-                <td class="border px-4 py-2">2019-01-21 15:32</td>
-            </tr>
-            <tr class="bg-gray-100">
-                <td class="border px-4 py-2">1.txt</td>
-                <td class="border px-4 py-2">22KB</td>
-                <td class="border px-4 py-2">2020-01-22 14:21</td>
-            </tr>
-            <tr>
-                <td class="border px-4 py-2">Intro to JavaScript</td>
-                <td class="border px-4 py-2">Chris</td>
-                <td class="border px-4 py-2">1,280</td>
-            </tr>
+                <tr :class="{'bg-gray-100': index % 2 === 0}" v-if="userFiles.length" v-for="(file, index) in userFiles" v-key="index">
+                    <td class="border px-4 py-2" v-text="file.file_name">hello-world.mp4</td>
+                    <td class="border px-4 py-2" v-text="file.file_size">152KB</td>
+                    <td class="border px-4 py-2" v-text="file.created_at">2019-01-21 15:32</td>
+                    <td class="border px-4 py-2" v-text="file.updated_at"></td>
+                </tr>
             </tbody>
         </table>
     </div>
 </div>
 <script>
-     $(function(){
+    new Vue({
+        el: "#app",
+        data: {
+            userFiles: []
+        },
+        created() {
+            this.getFiles();
+        },
+        methods: {
+            getFiles(limit = 100) {
+                axios.get("/files/index", {
+                    params: {
+                        name: localStorage.getItem("user_name"),
+                        limit
+                    }
+                }).then(({data}) => {
+                    this.userFiles = data
+                })
+            }
+        }
+    })
 
+    $(function () {
+        // 获取用户信息
         $.ajax({
             url: "/users/info?" + queryParams(),
             type: "POST",
@@ -79,11 +95,11 @@
         });
     })
 
-     function queryParams() {
-         var username = localStorage.getItem("user_name");
-         var token = localStorage.getItem("user_token");
-         return 'name=' + username + '&token=' + token;
-     }
+    function queryParams() {
+        var username = localStorage.getItem("user_name");
+        var token = localStorage.getItem("user_token");
+        return 'name=' + username + '&token=' + token;
+    }
 </script>
 </body>
 </html>
