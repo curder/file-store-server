@@ -12,7 +12,7 @@ type Response struct {
 }
 
 // 生成response对象
-func (r *Response) NewResponse(code int, message string, data interface{}) *Response {
+func NewResponse(code int, message string, data interface{}) *Response {
     return &Response{
         Code:    code,
         Message: message,
